@@ -1,0 +1,16 @@
+<!DOCTYPE html>
+   <html>
+   <head>
+     <meta charset="utf-8">
+     <title>ptt ファームウェア書き込み</title>
+     <!-- ESP Web Toolsの読み込み -->
+     <script type="module" src="https://unpkg.com/esp-web-tools@10/dist/web/install-button.js?module"></script>
+   </head>
+   <body>
+     <h1>esp_mini_ag ファームウェア更新</h1>
+     <p>ESP32をUSBでPCに接続し、下のボタンを押してください。</p>
+     
+     <!-- ボタンの配置（manifest.jsonを読み込む） -->
+     <esp-web-install-button manifest="./manifest.json"></esp-web-install-button>
+   </body>
+   </html>
