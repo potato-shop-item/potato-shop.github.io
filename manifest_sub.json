@@ -1,0 +1,13 @@
+{
+  "name": "XIAO BLE PTT (Sub-Device)",
+  "version": "1.0.0",
+  "show_log": true,
+  "builds": [
+    {
+      "chipFamily": "nRF52",
+      "parts": [
+        { "path": "./nRF52_ptt.ino.bin", "offset": 0 }
+      ]
+    }
+  ]
+}

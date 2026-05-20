@@ -1,16 +1,35 @@
 <!DOCTYPE html>
-   <html>
-   <head>
-     <meta charset="utf-8">
-     <title>ptt ファームウェア書き込み</title>
-     <!-- ESP Web Toolsの読み込み -->
-     <script type="module" src="https://unpkg.com/esp-web-tools@10/dist/web/install-button.js?module"></script>
-   </head>
-   <body>
-     <h1>esp_mini_ag ファームウェア更新</h1>
-     <p>ESP32をUSBでPCに接続し、下のボタンを押してください。</p>
-     
-     <!-- ボタンの配置（manifest.jsonを読み込む） -->
-     <esp-web-install-button manifest="./manifest.json"></esp-web-install-button>
-   </body>
-   </html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <title>無線PTTシステム ファームウェア書き込みポータル</title>
+    <style>
+        body { font-family: sans-serif; max-width: 800px; margin: 40px auto; padding: 0 20px; line-height: 1.6; }
+        .card { border: 1px solid #ccc; padding: 20px; border-radius: 8px; margin-bottom: 20px; background: #f9f9f9; }
+        h2 { margin-top: 0; }
+    </style>
+</head>
+<body>
+
+    <h1>無線PTTシステム インストーラー</h1>
+    <p>USBケーブルでデバイスをPCに接続し、対応するボタンから書き込みを行ってください。（Google Chrome / Edge 推奨）</p>
+
+    <!-- 【親機用の設定カード】 -->
+    <div class="card">
+        <h2>1. 親機 (ESP32-WROOM-32E) の書き込み</h2>
+        <p>親機を接続して「インストール」を押し、完了後に「LOGS & CONSOLE」からユーザーIDを入力してください。</p>
+        <esp-web-install-button manifest="./manifest_main.json"></esp-web-install-button>
+    </div>
+
+    <!-- 【子機用の設定カード】 -->
+    <div class="card">
+        <h2>2. 子機 (Seeed XIAO BLE nRF52840) の書き込み</h2>
+        <p>子機を接続して「インストール」を押し、完了後に「LOGS & CONSOLE」からユーザーIDとPTT番号を入力してください。</p>
+        <esp-web-install-button manifest="./manifest_sub.json"></esp-web-install-button>
+    </div>
+
+    <!-- ESP Web Tools の公式スクリプトを読み込み -->
+    <script type="module" src="https://unpkg.com/esp-web-tools@10/dist/web/install-button.js?module"></script>
+
+</body>
+</html>
