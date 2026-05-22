@@ -1,62 +1,462 @@
 <!DOCTYPE html>
-<html>
+<html lang="ja">
 <head>
-  <meta charset="utf-8">
-  <title>Web Serial on Android</title>
-  <!-- ポリフィルの読み込み -->
-  <script src="https://unpkg.com"></script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>無線PTTシステム 総合設定ポータル</title>
+    <style>
+        :root {
+            --main-color: #0288d1;
+            --sub-color: #e65100;
+            --success-color: #4caf50;
+            --bg-color: #f4f6f9;
+            --panel-bg: #ffffff;
+            --text-color: #333333;
+            --border-color: #ccc;
+        }
+        body { font-family: sans-serif; max-width: 800px; margin: 40px auto; padding: 0 20px; line-height: 1.6; color: var(--text-color); background-color: var(--bg-color); }
+        h1 { color: #111; margin-bottom: 5px; text-align: center; }
+        .subtitle { color: #666; margin-bottom: 25px; text-align: center; }
+        
+        /* モード切り替えタブ */
+        .tabs { display: flex; margin-bottom: 0; padding-left: 0; list-style: none; }
+        .tab-item { 
+            padding: 12px 30px; 
+            font-size: 16px; 
+            font-weight: bold; 
+            cursor: pointer; 
+            background: #e0e0e0; 
+            border: 1px solid var(--border-color); 
+            border-bottom: none;
+            border-radius: 8px 8px 0 0; 
+            margin-right: 5px;
+            color: #666;
+            transition: all 0.2s;
+        }
+        .tab-item.active-main { background: var(--main-color); color: white; border-color: var(--main-color); }
+        .tab-item.active-sub { background: var(--sub-color); color: white; border-color: var(--sub-color); }
+        
+        .card { border: 1px solid var(--border-color); padding: 25px; border-radius: 0 0 8px 8px; margin-bottom: 20px; background: var(--panel-bg); box-shadow: 0 4px 12px rgba(0,0,0,0.05); border-top: none; }
+        
+        .dynamic-title { font-size: 1.4em; font-weight: bold; margin-top: 0; margin-bottom: 15px; }
+        .color-main { color: var(--main-color); }
+        .color-sub { color: var(--sub-color); }
+
+        .status-box { background-color: #f0f2f5; border-radius: 6px; padding: 12px; font-size: 0.9rem; margin-bottom: 20px; border-left: 4px solid #ccc; }
+        .status-connected { border-left-color: var(--success-color); background-color: #e6fcf5; }
+        
+        .form-group { margin-top: 15px; display: flex; gap: 10px; align-items: center; }
+        input[type="number"] { padding: 10px; font-size: 16px; border: 1px solid var(--border-color); border-radius: 4px; width: 140px; box-sizing: border-box; }
+        input:disabled { background-color: #f5f5f5; color: #999; }
+        
+        .btn { padding: 10px 20px; font-size: 16px; font-weight: bold; border-radius: 4px; cursor: pointer; border: none; transition: background 0.2s; }
+        .btn-main-connect { background-color: #555; color: white; }
+        .btn-main-connect:hover { background-color: #333; }
+        .btn-sub-connect { background-color: var(--sub-color); color: white; }
+        .btn-sub-connect:hover { background-color: #b93f00; }
+        .btn-submit { background-color: var(--success-color); color: white; }
+        .btn-submit:hover { background-color: #43a047; }
+        .btn:disabled { background-color: #ccc; cursor: not-allowed; color: #fff; }
+        
+        .console-wrapper { margin-top: 20px; }
+        .console-title { font-weight: bold; margin-bottom: 5px; color: #555; display: flex; justify-content: space-between; align-items: center; }
+        .btn-clear { background: #e0e0e0; border: none; padding: 4px 10px; font-size: 12px; border-radius: 4px; cursor: pointer; }
+        
+        .console-box { 
+            background-color: #1e1e1e; 
+            color: #00ff66; 
+            font-family: 'Courier New', Courier, monospace; 
+            font-size: 13px; 
+            padding: 15px; 
+            border-radius: 6px; 
+            width: 100%;
+            height: 220px; 
+            box-sizing: border-box;
+            resize: vertical;
+            border: none;
+            box-shadow: inset 0 2px 6px rgba(0,0,0,0.3);
+            white-space: pre-wrap;
+        }
+        .footer { margin-top: 40px; font-size: 0.85em; color: #777; border-top: 1px solid #eee; padding-top: 10px; text-align: center; }
+        
+        /* 表示・非表示の制御クラス */
+        .hide { display: none !important; }
+    </style>
 </head>
 <body>
-  <button id="connectBtn">シリアル接続</button>
-  <button id="sendBtn" disabled>送信</button>
-  <pre id="log"></pre>
 
-  <script>
-    let port;
-    const logEl = document.getElementById('log');
+    <h1>無線PTTシステム 総合設定ポータル</h1>
+    <div class="subtitle">親機（有線Serial設定）および子機（無線Bluetooth設定）を一括管理します。</div>
+    
+    <!-- モード切り替えタブ -->
+    <ul class="tabs">
+        <li id="tabMain" class="tab-item active-main">親機（Master）設定</li>
+        <li id="tabSub" class="tab-item">子機（Slave）設定</li>
+    </ul>
 
-    function appendLog(str) {
-      logEl.textContent += str + '\n';
-    }
+    <div class="card">
+        <!-- 共通タイトル -->
+        <div id="panelTitle" class="dynamic-title color-main">親機（Master）設定モード</div>
+        
+        <!-- 共通状態表示ボックス -->
+        <div id="statusMessage" class="status-box">
+            状態: 未接続 (親機を接続するか、子機を設定モードにしてください)
+        </div>
 
-    document.getElementById('connectBtn').addEventListener('click', async () => {
-      try {
-        // ポートの選択画面を呼び出し
-        port = await navigator.serial.requestPort();
-        await port.open({ baudRate: 9600 }); // ボーレートを指定
-        appendLog('接続成功！');
-        document.getElementById('sendBtn').disabled = false;
+        <!-- ================= 親機用UIエリア ================= -->
+        <div id="mainUiSection">
+            <h3 style="margin-top:0; color:#555;">1. ファームウェアの書き込み</h3>
+			<div id="installerArea">
+			    <button id="customConnectBtn" class="btn btn-main-connect" style="background-color: var(--main-color);">
+			        ファームウェアを書き込む（INSTALL）
+			    </button>
+			    <p id="statusMessage" style="font-size: 0.9rem; color: #666; margin-top: 5px;"></p>
+			</div>
+            
+            <hr style="border: 0; border-top: 1px solid #ddd; margin: 20px 0;">
 
-        // 受信ループの開始
-        while (port.readable) {
-          const reader = port.readable.getReader();
-          try {
-            while (true) {
-              const { value, done } = await reader.read();
-              if (done) break;
-              // 受信データの処理
-              const decoder = new TextDecoder();
-              appendLog('受信: ' + decoder.decode(value));
-            }
-          } catch (error) {
-            console.error(error);
-          } finally {
-            reader.releaseLock();
-          }
+            <h3 style="color:#555;">2. ターゲット子機IDの設定</h3>
+            <button id="mainConnectBtn" class="btn btn-main-connect">親機（ESP32）とシリアル通信を開始</button>
+        </div>
+
+        <!-- ================= 子機用UIエリア ================= -->
+        <div id="subUiSection" class="hide">
+            <h3 style="margin-top:0; color:#555;">1. ファームウェアについて</h3>
+            <p style="font-size: 0.9rem; color: #666; margin-bottom: 20px;">
+                ※ 子機（XIAO）のファームウェア更新は、本体をPCに接続して生成されたディスクに <strong>UF2ファイルをドラッグ＆ドロップ</strong> して行ってください。このパネルでは無線によるユーザーIDの書き込みのみを行います。
+            </p>
+            <hr style="border: 0; border-top: 1px solid #ddd; margin: 20px 0;">
+            <h3 style="color:#555;">2. ユーザーIDの無線書き込み</h3>
+            <button id="subConnectBtn" class="btn btn-sub-connect">子機（XIAO）にBluetooth接続する</button>
+        </div>
+
+        <!-- ================= 共通入力・送信フォーム ================= -->
+        <div class="form-group">
+            <input type="number" id="userIdInput" min="1" max="1023" placeholder="777" value="1" disabled>
+            <button id="sendIdBtn" class="btn btn-submit" disabled>IDを設定（書き込み）</button>
+        </div>
+
+        <!-- ================= 共通ログコンソール ================= -->
+        <div class="console-wrapper">
+            <div class="console-title">
+                <span id="logTitle">シリアルモニター / 通信ログ</span>
+                <button id="clearConsoleBtn" class="btn-clear">ログ消去</button>
+            </div>
+            <textarea id="consoleBox" class="console-box" readonly>待機中...&#13;&#10;</textarea>
+        </div>
+    </div>
+
+    <div class="footer">
+        無線PTTシステム 総合管理ポータル v3.0.0 (Hybrid Serial/BLE)
+    </div>
+
+	<!-- ================= スクリプト・ライブラリの読み込み ================= -->
+
+<!-- ================= スクリプト・ライブラリの読み込み ================= -->
+
+    <!-- 1. ポリフィルとesptool-jsのインクルード（公式のコアエンジン） -->
+    <script src="https://unpkg.com/web-serial-polyfill@1.0.15/dist/serial.js"></script>
+    <script src="https://unpkg.com/esptool-js@0.5.0/bundle.js"></script>
+
+    <script>
+        // 2. Android環境用のポリフィル強制注入
+        if (!('serial' in navigator) && window.serial) {
+            Object.defineProperty(navigator, 'serial', {
+                value: window.serial,
+                writable: false, configurable: true, enumerable: true
+            });
+            console.log("Android環境：WebUSBポリフィルを適用しました。");
         }
-      } catch (err) {
-        appendLog('エラー: ' + err);
-      }
-    });
 
-    document.getElementById('sendBtn').addEventListener('click', async () => {
-      if (!port) return;
-      const writer = port.writable.getWriter();
-      const data = new TextEncoder().encode('Hello Arduino\n');
-      await writer.write(data);
-      writer.releaseLock();
-      appendLog('送信: Hello Arduino');
-    });
-  </script>
+        // 3. WebSerial ESPToolと同等の「主要シリアルICフィルター」の定義
+        const USB_FILTERS = [
+            { usbVendorId: 0x303A, usbProductId: 0x1001 }, // ESP32-S3/C3 USB内蔵
+            { usbVendorId: 0x1A86, usbProductId: 0x7523 }, // CH340 (一般的な格安ボード)
+            { usbVendorId: 0x1A86, usbProductId: 0x5523 }, // CH341
+            { usbVendorId: 0x10C4, usbProductId: 0xEA60 }, // CP210x (NodeMCUなど多数)
+            { usbVendorId: 0x0403, usbProductId: 0x6001 }, // FTDI FT232R
+            { usbVendorId: 0x0403, usbProductId: 0x6010 }  // FTDI FT2232H
+        ];
+
+        // 4. ボタンのクリックイベント設定
+        document.getElementById('customConnectBtn').addEventListener('click', async () => {
+            const statusText = document.getElementById('statusMessage');
+            statusText.innerText = "デバイス接続を待機中...";
+
+            try {
+                // 【超重要】フィルターを明示して要求することでAndroidでもポップアップに表示させる
+                const port = await navigator.serial.requestPort({ filters: USB_FILTERS });
+                
+                statusText.innerText = "接続成功！ファームウェアの解析を開始します...";
+                console.log("ポートの取得に成功しました:", port);
+
+                // 次のステップ：ここでmanifest_main.jsonを読み込んで、esptool-jsで書き込みを実行する
+                await startFlashing(port);
+
+            } catch (error) {
+                console.error("接続エラー:", error);
+                statusText.innerText = "接続がキャンセルされたか、デバイスが見つかりません。";
+            }
+        });
+
+        // 5. 書き込み処理の関数（骨組み）
+        async function startFlashing(port) {
+            const statusText = document.getElementById('statusMessage');
+            
+            try {
+                // manifest_main.json からバイナリのパスとオフセットを取得する処理
+                const response = await fetch('./manifest_main.json');
+                const manifest = await response.json();
+                
+                statusText.innerText = "ファームウェアを書き込み中...（しばらくお待ちください）";
+
+                // ※ここに esptool-js を使った実際の転送ロジックが入ります
+                // まずはスマホで「ポートを開くポップアップ」が正常に出るかテストしましょう！
+
+            } catch (err) {
+                console.error("書き込みエラー:", err);
+                statusText.innerText = "エラー: ファームウェアの書き込みに失敗しました。";
+            }
+        }
+    </script>
+
+    <!-- 4. メインのロジック（既存のコード） -->
+    <script>
+        // BLE用 UUID設定
+        const TARGET_SERVICE_UUID = '19b10000-e8f2-537e-4f6c-d104768a1214';
+        const TARGET_CHAR_UUID    = '19b10001-e8f2-537e-4f6c-d104768a1214';
+
+        // 状態保持用変数
+        let currentMode = 'main'; // 'main' または 'sub'
+        let serialPort = null;     // 親機用シリアルオブジェクト
+        let bleDevice = null;      // 子機用BLEデバイスオブジェクト
+        let idCharacteristic = null; // 子機用BLEキャラクタリスティック
+
+        // 【変更ポイント3】通信プロバイダの抽象化
+        // PCなら標準の navigator.serial、Androidならポリフィルの window.serial を使う
+        const getSerialProvider = () => {
+            if ('serial' in navigator) {
+                return navigator.serial;
+            } else if (window.serial) {
+                return window.serial; // ポリフィルが提供するWebUSBベースのシリアル
+            }
+            return null;
+        };
+
+        // DOM要素
+        const tabMain = document.getElementById('tabMain');
+        const tabSub = document.getElementById('tabSub');
+        const panelTitle = document.getElementById('panelTitle');
+        const statusMessage = document.getElementById('statusMessage');
+        const mainUiSection = document.getElementById('mainUiSection');
+        const subUiSection = document.getElementById('subUiSection');
+        
+        const mainConnectBtn = document.getElementById('mainConnectBtn');
+        const subConnectBtn = document.getElementById('subConnectBtn');
+        const userIdInput = document.getElementById('userIdInput');
+        const sendIdBtn = document.getElementById('sendIdBtn');
+        
+        const logTitle = document.getElementById('logTitle');
+        const consoleBox = document.getElementById('consoleBox');
+        const clearConsoleBtn = document.getElementById('clearConsoleBtn');
+
+        // ログ出力用関数
+        function logger(msg, isReset = false) {
+            const timestamp = new Date().toLocaleTimeString();
+            if (isReset) {
+                consoleBox.value = `[${timestamp}] ${msg}`;
+            } else {
+                consoleBox.value += `\n[${timestamp}] ${msg}`;
+            }
+            consoleBox.scrollTop = consoleBox.scrollHeight;
+        }
+
+        // ログ消去
+        clearConsoleBtn.addEventListener('click', () => { consoleBox.value = ''; });
+
+        // ================= タブ切り替えロジック =================
+        tabMain.addEventListener('click', () => {
+            if(serialPort || bleDevice) { alert('通信が確立されたままです。安全のため一度画面をリロードしてください。'); return; }
+            currentMode = 'main';
+            tabMain.className = 'tab-item active-main';
+            tabSub.className = 'tab-item';
+            panelTitle.innerText = '親機（Master）設定モード';
+            panelTitle.className = 'dynamic-title color-main';
+            statusMessage.innerText = '状態: 未接続 (親機をUSB接続して通信を開始してください)';
+            statusMessage.className = 'status-box';
+            
+            mainUiSection.classList.remove('hide');
+            subUiSection.classList.add('hide');
+            logTitle.innerText = 'リアルタイムシリアルログ (115200 bps)';
+            logger('親機（有線シリアル）モードに切り替わりました。', true);
+        });
+
+        tabSub.addEventListener('click', () => {
+            if(serialPort || bleDevice) { alert('通信が確立されたままです。安全のため一度画面をリロードしてください。'); return; }
+            currentMode = 'sub';
+            tabMain.className = 'tab-item';
+            tabSub.className = 'tab-item active-sub';
+            panelTitle.innerText = '子機（Slave）設定モード';
+            panelTitle.className = 'dynamic-title color-sub';
+            statusMessage.innerText = '状態: 未接続 (子機を設定モードにしてBluetooth接続してください)';
+            statusMessage.className = 'status-box';
+            
+            mainUiSection.classList.add('hide');
+            subUiSection.classList.remove('hide');
+            logTitle.innerText = 'Bluetooth通信ログ';
+            logger('子機（無線BLE）モードに切り替わりました。', true);
+        });
+
+
+        // ================= 【親機】シリアル接続ロジック =================
+        mainConnectBtn.addEventListener('click', async () => {
+            const serialProvider = getSerialProvider();
+            
+            // 【変更ポイント4】未対応ブラウザのガード条件を変更
+            if (!serialProvider) {
+                alert('お使いのブラウザはWeb Serial / WebUSB APIに対応していません。Android Chrome等を使用してください。');
+                return;
+            }
+            try {
+                logger("親機シリアルポート要求中...");
+                // 環境に応じて Web Serial または WebUSB からポートを取得
+                serialPort = await serialProvider.requestPort();
+                await serialPort.open({ baudRate: 115200 });
+
+                statusMessage.innerText = '状態: 接続完了 (親機のログを受信中...)';
+                statusMessage.className = 'status-box status-connected';
+                mainConnectBtn.classList.add('hide'); 
+                userIdInput.disabled = false;
+                sendIdBtn.disabled = false;
+                
+                logger("親機に有線接続されました。ログの監視を開始します。\n");
+
+                while (serialPort.readable) {
+                    const reader = serialPort.readable.getReader();
+                    try {
+                        while (true) {
+                            const { value, done } = await reader.read();
+                            if (done) { break; }
+                            const inputValue = new TextDecoder().decode(value);
+                            consoleBox.value += inputValue;
+                            consoleBox.scrollTop = consoleBox.scrollHeight;
+                        }
+                    } catch (error) {
+                        logger(`シリアル読込エラー: ${error.message}`);
+                    } finally {
+                        reader.releaseLock();
+                    }
+                }
+            } catch (error) {
+                console.error(error);
+                logger(`シリアル接続失敗: ${error.message}`);
+                alert('ポートの接続に失敗しました。');
+            }
+        });
+
+
+        // ================= 【子機】Bluetooth（BLE）接続ロジック =================
+        subConnectBtn.addEventListener('click', async () => {
+            if (!navigator.bluetooth) {
+                alert('お使いのブラウザはWeb Bluetoothに対応していません。Chrome等でお試しください。');
+                return;
+            }
+            try {
+                logger("BLEデバイス（子機）探索中...");
+                bleDevice = await navigator.bluetooth.requestDevice({
+                    filters: [{ services: [TARGET_SERVICE_UUID] }],
+                    optionalServices: [TARGET_SERVICE_UUID]
+                });
+
+                logger(`接続中: ${bleDevice.name}`);
+                const server = await bleDevice.gatt.connect();
+
+                logger("サービス取得中...");
+                const service = await server.getPrimaryService(TARGET_SERVICE_UUID);
+
+                logger("キャラクタリスティック取得中...");
+                idCharacteristic = await service.getCharacteristic(TARGET_CHAR_UUID);
+
+                statusMessage.innerText = `状態: BLE接続完了 (${bleDevice.name})`;
+                statusMessage.className = 'status-box status-connected';
+                subConnectBtn.classList.add('hide');
+                userIdInput.disabled = false;
+                sendIdBtn.disabled = false;
+                
+                logger("Bluetooth接続成功！IDを入力して書き込んでください。");
+                bleDevice.addEventListener('gattserverdisconnected', onBleDisconnected);
+
+            } catch (error) {
+                logger(`BLE接続失敗: ${error.message}`);
+                console.error(error);
+            }
+        });
+
+        function onBleDisconnected() {
+            statusMessage.innerText = "状態: 切断されました。";
+            statusMessage.className = 'status-box';
+            userIdInput.disabled = true;
+            sendIdBtn.disabled = true;
+            subConnectBtn.classList.remove('hide');
+            bleDevice = null;
+            idCharacteristic = null;
+            logger("子機とのBluetooth接続が切断されました。");
+        }
+
+
+        // ================= 【共通】ID送信ボタンの統合ロジック =================
+        sendIdBtn.addEventListener('click', async () => {
+            const idValue = parseInt(userIdInput.value, 10);
+            
+            // 境界値チェック
+            if (isNaN(idValue) || idValue < 1 || idValue > 1023) {
+                alert("IDは1〜1023の間で入力してください。");
+                return;
+            }
+
+            // --- 親機モード時の送信送信処理 (有線シリアル) ---
+            if (currentMode === 'main') {
+                if (!serialPort || !serialPort.writable) {
+                    alert('親機との通信が確立されていません。');
+                    return;
+                }
+                try {
+                    const encoder = new TextEncoder();
+                    const writer = serialPort.writable.getWriter();
+                    const command = `SET_ID=${idValue}\r\n`;
+                    
+                    logger(`親機へコマンド送信: SET_ID=${idValue}`);
+                    await writer.write(encoder.encode(command));
+                    writer.releaseLock();
+                } catch (error) {
+                    logger(`親機への送信失敗: ${error.message}`);
+                    alert('IDの送信に失敗しました。');
+                }
+                
+            // --- 子機モード時の送信処理 (無線BLE) ---
+            } else if (currentMode === 'sub') {
+                if (!idCharacteristic) {
+                    alert('子機とのBluetooth接続が確立されていません。');
+                    return;
+                }
+                try {
+                    logger(`子機へ無線送信中: ID ${idValue}`);
+                    
+                    // uint16_t（2バイト・リトルエンディアン）のバッファを作成
+                    const buffer = new ArrayBuffer(2);
+                    const view = new DataView(buffer);
+                    const viewSet = view.setUint16(0, idValue, true); // true = リトルエンディアン
+
+                    // BLE書き込み
+                    await idCharacteristic.writeValue(buffer);
+                    
+                    logger("子機への無線書き込み成功！");
+                    alert(`ユーザーID: ${idValue} を子機に正常に書き込みました！\n子機を再起動すると通常モードになります。`);
+                } catch (error) {
+                    logger(`子機への無線書き込み失敗: ${error.message}`);
+                }
+            }
+        });
+    </script>
 </body>
 </html>
