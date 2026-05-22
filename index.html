@@ -1,57 +1,62 @@
 <!DOCTYPE html>
-<html lang="ja">
+<html>
 <head>
-    <meta charset="UTF-8">
-    <title>WebUSB Serial Terminal</title>
+  <meta charset="utf-8">
+  <title>Web Serial on Android</title>
+  <!-- ポリフィルの読み込み -->
+  <script src="https://unpkg.com"></script>
 </head>
 <body>
-    <button id="connect-btn">デバイスに接続</button>
-    <button id="send-btn">データ送信</button>
-    <pre id="output"></pre>
+  <button id="connectBtn">シリアル接続</button>
+  <button id="sendBtn" disabled>送信</button>
+  <pre id="log"></pre>
 
-    <!-- Web Serial API Polyfill を読み込み -->
-    <script src="https://jsdelivr.net"></script>
-    
-    <script>
-        let port;
+  <script>
+    let port;
+    const logEl = document.getElementById('log');
 
-        document.getElementById('connect-btn').addEventListener('click', async () => {
-            try {
-                // USBシリアルの要求（ベンダーIDなどを指定して絞り込みも可能）
-                port = await navigator.serial.requestPort();
-                
-                // ボーレートなどを設定してポートを開く
-                await port.open({ baudRate: 9600 });
-                document.getElementById('output').textContent += "接続成功\n";
-                
-                // 受信処理の開始
-                while (port.readable) {
-                    const reader = port.readable.getReader();
-                    try {
-                        while (true) {
-                            const { value, done } = await reader.read();
-                            if (done) break;
-                            const text = new TextDecoder().decode(value);
-                            document.getElementById('output').textContent += text;
-                        }
-                    } catch (error) {
-                        console.error(error);
-                    } finally {
-                        reader.releaseLock();
-                    }
-                }
-            } catch (err) {
-                console.error("接続失敗:", err);
+    function appendLog(str) {
+      logEl.textContent += str + '\n';
+    }
+
+    document.getElementById('connectBtn').addEventListener('click', async () => {
+      try {
+        // ポートの選択画面を呼び出し
+        port = await navigator.serial.requestPort();
+        await port.open({ baudRate: 9600 }); // ボーレートを指定
+        appendLog('接続成功！');
+        document.getElementById('sendBtn').disabled = false;
+
+        // 受信ループの開始
+        while (port.readable) {
+          const reader = port.readable.getReader();
+          try {
+            while (true) {
+              const { value, done } = await reader.read();
+              if (done) break;
+              // 受信データの処理
+              const decoder = new TextDecoder();
+              appendLog('受信: ' + decoder.decode(value));
             }
-        });
+          } catch (error) {
+            console.error(error);
+          } finally {
+            reader.releaseLock();
+          }
+        }
+      } catch (err) {
+        appendLog('エラー: ' + err);
+      }
+    });
 
-        document.getElementById('send-btn').addEventListener('click', async () => {
-            if (!port) return alert("先に接続してください");
-            const writer = port.writable.getWriter();
-            const data = new TextEncoder().encode("Hello USB Serial\r\n");
-            await writer.write(data);
-            writer.releaseLock();
-        });
-    </script>
+    document.getElementById('sendBtn').addEventListener('click', async () => {
+      if (!port) return;
+      const writer = port.writable.getWriter();
+      const data = new TextEncoder().encode('Hello Arduino\n');
+      await writer.write(data);
+      writer.releaseLock();
+      appendLog('送信: Hello Arduino');
+    });
+  </script>
 </body>
 </html>
