@@ -107,7 +107,10 @@
         <div id="mainUiSection">
             <h3 style="margin-top:0; color:#555;">1. ファームウェアの書き込み</h3>
             <div style="margin-bottom: 25px;">
-                <esp-web-install-button id="installerBtn" manifest="./manifest_main.json"></esp-web-install-button>
+				<esp-web-install-button id="installerBtn" manifest="./manifest_main.json">
+				    <button slot="activate" class="btn btn-main-connect" style="background-color: var(--main-color);">ファームウェアを書き込む（INSTALL）</button>
+				    <span slot="unsupported">お使いのブラウザ・環境は書き込みに未対応です（HTTPS接続、またはAndroid Chrome等が必要です）</span>
+				</esp-web-install-button>
             </div>
             
             <hr style="border: 0; border-top: 1px solid #ddd; margin: 20px 0;">
