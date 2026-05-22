@@ -150,12 +150,29 @@
         無線PTTシステム 総合管理ポータル v3.0.0 (Hybrid Serial/BLE)
     </div>
 
-    <!-- 【変更ポイント1】Web Serial Polyfill（Android WebUSBエミュレータ）の読み込み -->
+	<!-- ================= スクリプト・ライブラリの読み込み ================= -->
+
+    <!-- 1. まずWeb Serial Polyfillを読み込む -->
     <script src="https://unpkg.com/web-serial-polyfill@1.0.15/dist/serial.js"></script>
 
-    <!-- 【変更ポイント2】ESP Web ToolsをAndroid対応（WebUSBポリフィル内蔵版）に差し替え -->
-    <script type="module" src="https://unpkg.com/esp-web-tools-and-polyfill@10/dist/web/install-button.js?module"></script>
+    <!-- 2. Android環境のために、公式ボタンが読み込まれる前にポリフィルをブラウザに偽装注入する -->
+    <script>
+        // navigator.serial が存在しない環境（Androidなど）の場合、ポリフィルを強制注入
+        if (!('serial' in navigator) && window.serial) {
+            Object.defineProperty(navigator, 'serial', {
+                value: window.serial,
+                writable: false,
+                configurable: true,
+                enumerable: true
+            });
+            console.log("Android環境を検出: WebUSBシリアルポリフィルをインジェクションしました。");
+        }
+    </script>
 
+    <!-- 3. 【重要】スクリプトを信頼性の高い「公式」のものに戻す -->
+    <script type="module" src="https://unpkg.com/esp-web-tools@10/dist/web/install-button.js?module"></script>
+
+    <!-- 4. メインのロジック（既存のコード） -->
     <script>
         // BLE用 UUID設定
         const TARGET_SERVICE_UUID = '19b10000-e8f2-537e-4f6c-d104768a1214';
