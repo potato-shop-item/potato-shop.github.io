@@ -155,21 +155,33 @@
     <!-- 1. まずWeb Serial Polyfillを読み込む -->
     <script src="https://unpkg.com/web-serial-polyfill@1.0.15/dist/serial.js"></script>
 
-    <!-- 2. Android環境のために、公式ボタンが読み込まれる前にポリフィルをブラウザに偽装注入する -->
+    <!-- 2. Android環境のために、主要なシリアルICのIDを登録してポリフィルを注入 -->
     <script>
-        // navigator.serial が存在しない環境（Androidなど）の場合、ポリフィルを強制注入
+        // navigator.serial が存在しない環境（Androidなど）の場合
         if (!('serial' in navigator) && window.serial) {
+            
+            // 主要なUSB-シリアル変換チップのVendor IDリストを登録して自動認識を促す
+            // 0x10C4=CP2102, 0x1A86=CH340/CH341, 0x0403=FTDI, 0x303A=ESP32S3/C3直結
+            const customSerial = new window.serial.Serial({
+                usbMandatoryFilters: [
+                    { usbVendorId: 0x10C4 }, 
+                    { usbVendorId: 0x1A86 }, 
+                    { usbVendorId: 0x0403 },
+                    { usbVendorId: 0x303A }
+                ]
+            });
+
             Object.defineProperty(navigator, 'serial', {
-                value: window.serial,
+                value: customSerial,
                 writable: false,
                 configurable: true,
                 enumerable: true
             });
-            console.log("Android環境を検出: WebUSBシリアルポリフィルをインジェクションしました。");
+            console.log("Android環境：シリアルICフィルター付きでポリフィルを注入しました。");
         }
     </script>
 
-    <!-- 3. 【重要】スクリプトを信頼性の高い「公式」のものに戻す -->
+    <!-- 3. 公式のESP Web Toolsを読み込む -->
     <script type="module" src="https://unpkg.com/esp-web-tools@10/dist/web/install-button.js?module"></script>
 
     <!-- 4. メインのロジック（既存のコード） -->
