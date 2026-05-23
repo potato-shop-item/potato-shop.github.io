@@ -1,104 +1,85 @@
-<!DOCTYPE html><script type=importmap>{"imports":{"1aLB1":"./esp32c5.79736917.js","1rOwG":"./stub_flasher_32s2.c2d0b370.js","1w3ZK":"./stub_flasher_32c2.33dd4f2e.js","4I2Sc":"./stub_flasher_32c61.14fefeef.js","7EUwX":"./stub_flasher_32h2.fc3308ee.js","88K3s":"./stub_flasher_32p4rc1.86b25a35.js","998XP":"./stub_flasher_32s3.b09176ac.js","9lUoB":"./esp32c6.a9df0e7f.js","WNe3b":"./esp32c2.305ec288.js","bLxdn":"./stub_flasher_32c5.91ab3d05.js","bwACW":"./stub_flasher_32c3.666c4ef5.js","c7UZ1":"./esp32s2.689be6e1.js","cYTsC":"./esp32p4.7094f822.js","coFM5":"./stub_flasher_32p4.a7746577.js","dDuaB":"./esp32c3.c51b9e53.js","dMGxz":"./stub_flasher_32.77a1da7c.js","ee69x":"./esp32c61.2cbc81b2.js","fHE38":"./esp32.7a3d1e55.js","fWetl":"./esp32s3.fec6a76c.js","gUGmD":"./esp32h2.32030ea2.js","heIjL":"./stub_flasher_32c6.3966216a.js","jcQQ1":"./stub_flasher_8266.3c1b03dc.js"}}</script><meta charset=utf-8><title>ESP Tool</title><link rel=stylesheet href=https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css><link rel=stylesheet href=https://cdn.jsdelivr.net/npm/xterm@4.19.0/css/xterm.css><link href="https://fonts.googleapis.com/css?family=Orbitron" rel=stylesheet><link rel=icon href=favicon.ee2246ac.ico><script src=https://cdn.jsdelivr.net/npm/xterm@4.19.0/lib/xterm.min.js></script><script src=https://cdn.jsdelivr.net/npm/crypto-js@4.1.1/crypto-js.js></script><script src=https://ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js></script><script src=https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js></script><body>
-        <h1 align=center><p><img src=esp-logo.089ce671.png width=42 height=42 style=vertical-align:middle crossorigin> ESP Tool</h1>
-        <h4 align=center>A Serial Flasher utility for Espressif chips</h4>
-        <div id=safariErr style=display:none><p align=center style=color:red>This tool is not supported on Safari browser!</p>
-        </div>
-        <div align=center>
-            <a class="btn btn-info" href=./docs/index.html>View the API Documentation</a>
+<!DOCTYPE html><html lang=ja><meta charset=UTF-8><meta name=viewport content="width=device-width, initial-scale=1.0"><title>無線PTTシステム 総合設定ポータル</title><style>:root{--main-color:#0288d1;--sub-color:#e65100;--success-color:#4caf50;--bg-color:#f4f6f9;--panel-bg:#fff;--text-color:#333;--border-color:#ccc}body{max-width:800px;color:var(--text-color);background-color:var(--bg-color);margin:40px auto;padding:0 20px;font-family:sans-serif;line-height:1.6}h1{color:#111;text-align:center;margin-bottom:5px}.subtitle{color:#666;text-align:center;margin-bottom:25px}.tabs{margin-bottom:0;padding-left:0;list-style:none;display:flex}.tab-item{cursor:pointer;border:1px solid var(--border-color);color:#666;background:#e0e0e0;border-bottom:none;border-radius:8px 8px 0 0;margin-right:5px;padding:12px 30px;font-size:16px;font-weight:700;transition:all .2s}.tab-item.active-main{background:var(--main-color);color:#fff;border-color:var(--main-color)}.tab-item.active-sub{background:var(--sub-color);color:#fff;border-color:var(--sub-color)}.card{border:1px solid var(--border-color);background:var(--panel-bg);border-top:none;border-radius:0 0 8px 8px;margin-bottom:20px;padding:25px;box-shadow:0 4px 12px #0000000d}.dynamic-title{margin-top:0;margin-bottom:15px;font-size:1.4em;font-weight:700}.color-main{color:var(--main-color)}.color-sub{color:var(--sub-color)}.status-box{background-color:#f0f2f5;border-left:4px solid #ccc;border-radius:6px;margin-bottom:20px;padding:12px;font-size:.9rem}.status-connected{border-left-color:var(--success-color);background-color:#e6fcf5}.form-group{align-items:center;gap:10px;margin-top:15px;display:flex}input[type=number]{border:1px solid var(--border-color);box-sizing:border-box;border-radius:4px;width:140px;padding:10px;font-size:16px}input:disabled{color:#999;background-color:#f5f5f5}.btn{cursor:pointer;border:none;border-radius:4px;padding:10px 20px;font-size:16px;font-weight:700;transition:background .2s}.btn-main-connect{color:#fff;background-color:#555}.btn-main-connect:hover{background-color:#333}.btn-sub-connect{background-color:var(--sub-color);color:#fff}.btn-sub-connect:hover{background-color:#b93f00}.btn-submit{background-color:var(--success-color);color:#fff}.btn-submit:hover{background-color:#43a047}.btn:disabled{cursor:not-allowed;color:#fff;background-color:#ccc}.console-wrapper{margin-top:20px}.console-title{color:#555;justify-content:space-between;align-items:center;margin-bottom:5px;font-weight:700;display:flex}.btn-clear{cursor:pointer;background:#e0e0e0;border:none;border-radius:4px;padding:4px 10px;font-size:12px}.console-box{color:#0f6;box-sizing:border-box;resize:vertical;white-space:pre-wrap;background-color:#1e1e1e;border:none;border-radius:6px;width:100%;height:220px;padding:15px;font-family:Courier New,Courier,monospace;font-size:13px;box-shadow:inset 0 2px 6px #0000004d}.footer{color:#777;text-align:center;border-top:1px solid #eee;margin-top:40px;padding-top:10px;font-size:.85em}.hide{display:none!important}</style><body>
 
-            <div class="form-check form-check-inline">
-                <input class=form-check-input type=checkbox id=debugLogging value>
-                <label class=form-check-label for=debugLogging>Show Debug log</label>
-            </div>
-          </div>
-        <div class=container id=main>
-            <hr>
-            <div id=program>
-                <h3> Program </h3>
-                <label for=baudrates id=lblBaudrate>Baudrate:</label>
-                <label style=display:none id=lblConnTo>Connected to device: </label>
-                <select name=baudrates id=baudrates>
-                    <option value=921600>921600</option>
-                    <option value=460800>460800</option>
-                    <option value=230400>230400</option>
-                    <option value=115200>115200</option>
-                </select>
-
-                <br><br>
-
-                <input class="btn btn-info btn-sm" type=button id=connectButton value=Connect>
-                <input class="btn btn-info btn-sm" type=button id=copyTraceButton value="Copy Trace">
-                <input class="btn btn-sm btn-warning" type=button id=disconnectButton value=Disconnect>
-                <input class="btn btn-danger btn-sm" type=button id=eraseButton value="Erase Flash">
-                <br>
-
-                <div class="alert alert-danger alert-dismissible" id=alertDiv style=margin-top:10px;display:none>
-                    <a href=# class=close aria-label=close onclick="$('.alert').hide()">×</a>
-                    <span id=alertmsg></span>
-                </div>
-
-                <div id=files>
-                    <table class="table table-striped" id=fileTable>
-                        <thead class=thead-light>
-                            <tr>
-                                <th>Flash Address</th>
-                                <th>File</th>
-                                <th></th>
-                            </tr>
-                        </thead>
-                        <tbody id=tableBody>
-                        </tbody>
-                    </table>
-                    <input class="btn btn-info btn-sm" type=button id=addFile value="Add File">
-                    <br><br>
-                    <label for=flashMode id=lblFlashMode>Flash Mode:</label>
-                    <select name=flashMode id=flashMode>
-                        <option value=keep selected>keep</option>
-                        <option value=dio>dio</option>
-                        <option value=qio>qio</option>
-                        <option value=dout>dout</option>
-                        <option value=qout>qout</option>
-                    </select>
-                    <br><br>
-                    <label for=flashFreq id=lblFlashFreq>Flash Frequency:</label>
-                    <select name=flashFreq id=flashFreq>
-                        <option value=keep>keep</option>
-                    </select>
-                    <br><br>
-                    <label for=flashSize id=lblFlashSize>Flash Size:</label>
-                    <select name=flashSize id=flashSize>
-                        <option value=detect>detect</option>
-                        <option value=keep>keep</option>
-                    </select>
-                    <br><br>
-                    <input class="btn btn-info btn-sm" type=button id=programButton value=Program>
-                </div>
-                <output id=list></output>
-                <hr>
-            </div>
-            <div id=console>
-                <h3>Console </h3>
-                <label style=display:none id=lblConsoleFor>Connected to device: </label>
-                <label for=consoleBaudrates id=lblConsoleBaudrate>Baudrate:</label>
-                <select name=consoleBaudrates id=consoleBaudrates>
-                    <option value=115200>115200</option>
-                    <option value=74880>74880</option>
-                </select>
-                <label for=reconnectDelay id=lblReconnectDelay>Reconnect Delay (ms):</label>
-                <input type=number id=reconnectDelay name=reconnectDelay value=1000 min=100 max=10000 step=100>
-                <label for=maxRetries id=lblMaxRetries>Max Retries:</label>
-                <input type=number id=maxRetries name=maxRetries value=5 min=1 max=20 step=1>
-
-                <br><br>
-
-                <input class="btn btn-info" type=button id=consoleStartButton value=Start>
-                <input class="btn btn-info" type=button id=consoleStopButton value=Stop>
-                <input class="btn btn-info" type=button id=resetButton value=Reset>
-                <hr>
-            </div>
-            <div id=terminal></div>
-        </div>
-        <script src=typescript.ecfec9c0.js type=module></script>
-        <script>var isSafari=/constructor/i.test(window.HTMLElement)||function(i){return"[object SafariRemoteNotification]"===i.toString()}(!window.safari||"u">typeof safari&&window.safari.pushNotification);isSafari&&(document.getElementById("safariErr").style.display="inline",document.getElementById("main").style.display="none");</script>
+    <h1>無線PTTシステム 総合設定ポータル</h1>
+    <div class=subtitle>親機（有線Serial設定）および子機（無線Bluetooth設定）を一括管理します。</div>
     
+    
+    <ul class=tabs>
+        <li id=tabMain class="active-main tab-item">親機（Master）設定</li>
+        <li id=tabSub class=tab-item>子機（Slave）設定</li>
+    </ul>
+
+    <div class=card>
+        
+        <div id=panelTitle class="color-main dynamic-title">親機（Master）設定モード</div>
+        
+        
+        <div id=statusMessage class=status-box>
+            状態: 未接続 (親機を接続するか、子機を設定モードにしてください)
+        </div>
+
+        
+        <div id=mainUiSection>
+            <h3 style=color:#555;margin-top:0>1. ファームウェアの書き込み</h3>
+            <div style=margin-bottom:25px>
+				<esp-web-install-button id=installerBtn manifest=./manifest_main.json>
+				    <button slot=activate class="btn btn-main-connect" style=background-color:var(--main-color)>ファームウェアを書き込む（INSTALL）</button>
+				    <span slot=unsupported>お使いのブラウザ・環境は書き込みに未対応です（HTTPS接続、またはAndroid Chrome等が必要です）</span>
+				</esp-web-install-button>
+            </div>
+            
+            <hr style="border:0;border-top:1px solid #ddd;margin:20px 0">
+
+            <h3 style=color:#555>2. ターゲット子機IDの設定</h3>
+            <button id=mainConnectBtn class="btn btn-main-connect">親機（ESP32）とシリアル通信を開始</button>
+        </div>
+
+        
+        <div id=subUiSection class=hide>
+            <h3 style=color:#555;margin-top:0>1. ファームウェアについて</h3>
+            <p style=color:#666;margin-bottom:20px;font-size:.9rem>
+                ※ 子機（XIAO）のファームウェア更新は、本体をPCに接続して生成されたディスクに <strong>UF2ファイルをドラッグ＆ドロップ</strong> して行ってください。このパネルでは無線によるユーザーIDの書き込みのみを行います。
+            </p>
+            <hr style="border:0;border-top:1px solid #ddd;margin:20px 0">
+            <h3 style=color:#555>2. ユーザーIDの無線書き込み</h3>
+            <button id=subConnectBtn class="btn btn-sub-connect">子機（XIAO）にBluetooth接続する</button>
+        </div>
+
+        
+        <div class=form-group>
+            <input type=number id=userIdInput min=1 max=1023 placeholder=777 value=1 disabled>
+            <button id=sendIdBtn class="btn btn-submit" disabled>IDを設定（書き込み）</button>
+        </div>
+
+        
+        <div class=console-wrapper>
+            <div class=console-title>
+                <span id=logTitle>シリアルモニター / 通信ログ</span>
+                <button id=clearConsoleBtn class=btn-clear>ログ消去</button>
+            </div>
+            <textarea id=consoleBox class=console-box readonly>待機中...
+</textarea>
+        </div>
+    </div>
+
+    <div class=footer>
+        無線PTTシステム 総合管理ポータル v3.0.0 (Hybrid Serial/BLE)
+    </div>
+
+	
+
+    
+    <script src=https://unpkg.com/web-serial-polyfill@1.0.15/dist/serial.js></script>
+
+    
+    <script>"serial"in navigator||!window.serial||(Object.defineProperty(navigator,"serial",{value:new window.serial.Serial({usbMandatoryFilters:[{usbVendorId:4292},{usbVendorId:6790},{usbVendorId:1027},{usbVendorId:12346}]}),writable:!1,configurable:!0,enumerable:!0}),console.log("Android環境：シリアルICフィルター付きでポリフィルを注入しました。"));</script>
+
+    
+    <script type=module src=https://unpkg.com/esp-web-tools@10/dist/web/install-button.js?module></script>
+
+    
+    <script>const TARGET_SERVICE_UUID="19b10000-e8f2-537e-4f6c-d104768a1214",TARGET_CHAR_UUID="19b10001-e8f2-537e-4f6c-d104768a1214";let currentMode="main",serialPort=null,bleDevice=null,idCharacteristic=null;const getSerialProvider=()=>"serial"in navigator?navigator.serial:window.serial?window.serial:null,tabMain=document.getElementById("tabMain"),tabSub=document.getElementById("tabSub"),panelTitle=document.getElementById("panelTitle"),statusMessage=document.getElementById("statusMessage"),mainUiSection=document.getElementById("mainUiSection"),subUiSection=document.getElementById("subUiSection"),mainConnectBtn=document.getElementById("mainConnectBtn"),subConnectBtn=document.getElementById("subConnectBtn"),userIdInput=document.getElementById("userIdInput"),sendIdBtn=document.getElementById("sendIdBtn"),logTitle=document.getElementById("logTitle"),consoleBox=document.getElementById("consoleBox"),clearConsoleBtn=document.getElementById("clearConsoleBtn");function logger(e,t=!1){let a=new Date().toLocaleTimeString();t?consoleBox.value=`[${a}] ${e}`:consoleBox.value+=`
+[${a}] ${e}`,consoleBox.scrollTop=consoleBox.scrollHeight}function onBleDisconnected(){statusMessage.innerText="状態: 切断されました。",statusMessage.className="status-box",userIdInput.disabled=!0,sendIdBtn.disabled=!0,subConnectBtn.classList.remove("hide"),bleDevice=null,idCharacteristic=null,logger("子機とのBluetooth接続が切断されました。")}clearConsoleBtn.addEventListener("click",()=>{consoleBox.value=""}),tabMain.addEventListener("click",()=>{serialPort||bleDevice?alert("通信が確立されたままです。安全のため一度画面をリロードしてください。"):(currentMode="main",tabMain.className="tab-item active-main",tabSub.className="tab-item",panelTitle.innerText="親機（Master）設定モード",panelTitle.className="dynamic-title color-main",statusMessage.innerText="状態: 未接続 (親機をUSB接続して通信を開始してください)",statusMessage.className="status-box",mainUiSection.classList.remove("hide"),subUiSection.classList.add("hide"),logTitle.innerText="リアルタイムシリアルログ (115200 bps)",logger("親機（有線シリアル）モードに切り替わりました。",!0))}),tabSub.addEventListener("click",()=>{serialPort||bleDevice?alert("通信が確立されたままです。安全のため一度画面をリロードしてください。"):(currentMode="sub",tabMain.className="tab-item",tabSub.className="tab-item active-sub",panelTitle.innerText="子機（Slave）設定モード",panelTitle.className="dynamic-title color-sub",statusMessage.innerText="状態: 未接続 (子機を設定モードにしてBluetooth接続してください)",statusMessage.className="status-box",mainUiSection.classList.add("hide"),subUiSection.classList.remove("hide"),logTitle.innerText="Bluetooth通信ログ",logger("子機（無線BLE）モードに切り替わりました。",!0))}),mainConnectBtn.addEventListener("click",async()=>{let e=getSerialProvider();if(!e)return void alert("お使いのブラウザはWeb Serial / WebUSB APIに対応していません。Android Chrome等を使用してください。");try{for(logger("親機シリアルポート要求中..."),serialPort=await e.requestPort(),await serialPort.open({baudRate:115200}),statusMessage.innerText="状態: 接続完了 (親機のログを受信中...)",statusMessage.className="status-box status-connected",mainConnectBtn.classList.add("hide"),userIdInput.disabled=!1,sendIdBtn.disabled=!1,logger("親機に有線接続されました。ログの監視を開始します。\n");serialPort.readable;){let e=serialPort.readable.getReader();try{for(;;){let{value:t,done:a}=await e.read();if(a)break;let n=new TextDecoder().decode(t);consoleBox.value+=n,consoleBox.scrollTop=consoleBox.scrollHeight}}catch(e){logger(`\u{30B7}\u{30EA}\u{30A2}\u{30EB}\u{8AAD}\u{8FBC}\u{30A8}\u{30E9}\u{30FC}: ${e.message}`)}finally{e.releaseLock()}}}catch(e){console.error(e),logger(`\u{30B7}\u{30EA}\u{30A2}\u{30EB}\u{63A5}\u{7D9A}\u{5931}\u{6557}: ${e.message}`),alert("ポートの接続に失敗しました。")}}),subConnectBtn.addEventListener("click",async()=>{if(!navigator.bluetooth)return void alert("お使いのブラウザはWeb Bluetoothに対応していません。Chrome等でお試しください。");try{logger("BLEデバイス（子機）探索中..."),bleDevice=await navigator.bluetooth.requestDevice({filters:[{services:[TARGET_SERVICE_UUID]}],optionalServices:[TARGET_SERVICE_UUID]}),logger(`\u{63A5}\u{7D9A}\u{4E2D}: ${bleDevice.name}`);let e=await bleDevice.gatt.connect();logger("サービス取得中...");let t=await e.getPrimaryService(TARGET_SERVICE_UUID);logger("キャラクタリスティック取得中..."),idCharacteristic=await t.getCharacteristic("19b10001-e8f2-537e-4f6c-d104768a1214"),statusMessage.innerText=`\u{72B6}\u{614B}: BLE\u{63A5}\u{7D9A}\u{5B8C}\u{4E86} (${bleDevice.name})`,statusMessage.className="status-box status-connected",subConnectBtn.classList.add("hide"),userIdInput.disabled=!1,sendIdBtn.disabled=!1,logger("Bluetooth接続成功！IDを入力して書き込んでください。"),bleDevice.addEventListener("gattserverdisconnected",onBleDisconnected)}catch(e){logger(`BLE\u{63A5}\u{7D9A}\u{5931}\u{6557}: ${e.message}`),console.error(e)}}),sendIdBtn.addEventListener("click",async()=>{let e=parseInt(userIdInput.value,10);if(isNaN(e)||e<1||e>1023)return void alert("IDは1〜1023の間で入力してください。");if("main"===currentMode){if(!serialPort||!serialPort.writable)return void alert("親機との通信が確立されていません。");try{let t=new TextEncoder,a=serialPort.writable.getWriter(),n=`SET_ID=${e}\r
+`;logger(`\u{89AA}\u{6A5F}\u{3078}\u{30B3}\u{30DE}\u{30F3}\u{30C9}\u{9001}\u{4FE1}: SET_ID=${e}`),await a.write(t.encode(n)),a.releaseLock()}catch(e){logger(`\u{89AA}\u{6A5F}\u{3078}\u{306E}\u{9001}\u{4FE1}\u{5931}\u{6557}: ${e.message}`),alert("IDの送信に失敗しました。")}}else if("sub"===currentMode){if(!idCharacteristic)return void alert("子機とのBluetooth接続が確立されていません。");try{logger(`\u{5B50}\u{6A5F}\u{3078}\u{7121}\u{7DDA}\u{9001}\u{4FE1}\u{4E2D}: ID ${e}`);let t=new ArrayBuffer(2);new DataView(t).setUint16(0,e,!0),await idCharacteristic.writeValue(t),logger("子機への無線書き込み成功！"),alert(`\u{30E6}\u{30FC}\u{30B6}\u{30FC}ID: ${e} \u{3092}\u{5B50}\u{6A5F}\u{306B}\u{6B63}\u{5E38}\u{306B}\u{66F8}\u{304D}\u{8FBC}\u{307F}\u{307E}\u{3057}\u{305F}\u{FF01}
+\u{5B50}\u{6A5F}\u{3092}\u{518D}\u{8D77}\u{52D5}\u{3059}\u{308B}\u{3068}\u{901A}\u{5E38}\u{30E2}\u{30FC}\u{30C9}\u{306B}\u{306A}\u{308A}\u{307E}\u{3059}\u{3002}`)}catch(e){logger(`\u{5B50}\u{6A5F}\u{3078}\u{306E}\u{7121}\u{7DDA}\u{66F8}\u{304D}\u{8FBC}\u{307F}\u{5931}\u{6557}: ${e.message}`)}}});</script>
 
