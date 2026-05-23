@@ -15,17 +15,32 @@
             状態: 未接続 (親機を接続するか、子機を設定モードにしてください)
         </div>
 
-        <div id=mainUiSection>
-            <h3 style=color:#555;margin-top:0>1. ファームウェアの書き込み</h3>
-            <div style=margin-bottom:25px>
-                <p style=color:#666;font-size:.9rem>※ ファームウェアの書き込み（消去・書き込み）は、上部のESP Toolメインエリアから実行可能です。スマホ接続に対応しています。</p>
-            </div>
-            
-            <hr style="border:0;border-top:1px solid #ddd;margin:20px 0">
-
-            <h3 style=color:#555>2. ターゲット子機IDの設定</h3>
-            <button id=mainConnectBtn class="btn btn-main-connect">親機（ESP32）とシリアル通信を開始</button>
-        </div>
+		<div id=mainUiSection>
+		    <h3 style=color:#555;margin-top:0>1. シリアル接続設定</h3>
+		    
+		    <div style=flex-wrap:wrap;align-items:center;gap:15px;margin-bottom:15px;display:flex>
+		        <label>
+		            通信速度 (Baudrate):
+		            <select id=baudrates class=form-control style=width:150px;display:inline-block>
+		                <option value=921600>921600</option>
+		                <option value=460800>460800</option>
+		                <option value=230400>230400</option>
+		                <option value=115200 selected>115200</option>
+		            </select>
+		        </label>
+		        
+		        <button id=connectButton class="btn btn-main-connect" style=background-color:var(--main-color)>親機（ESP32）と接続</button>
+		        <button id=disconnectButton class="btn btn-danger hide">切断</button>
+		    </div>
+		    
+		    <hr style="border:0;border-top:1px solid #ddd;margin:20px 0">
+		
+		    <h3 style=color:#555>2. ファームウェア操作</h3>
+		    <div style=gap:10px;margin-bottom:15px;display:flex>
+		        <button id=eraseButton class=btn style=color:#fff;background-color:#f44336 disabled>Flash消去 (Erase)</button>
+		        <button id=resetButton class="btn btn-warning" disabled>本体リセット (Reset)</button>
+		    </div>
+		</div>
 
         <div id=subUiSection class=hide>
             <h3 style=color:#555;margin-top:0>1. ファームウェアについて</h3>
