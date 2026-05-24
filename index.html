@@ -47,6 +47,7 @@
                 <output id=list></output>
                 <hr>
             </div>
+
             <div id=console>
                 <h3>Console </h3>
                 <label style=display:none id=lblConsoleFor>Connected to device: </label>
@@ -67,6 +68,17 @@
                 <input class="btn btn-info" type=button id=resetButton value=Reset>
                 <hr>
             </div>
+
+            <div id=parentSetting>
+                <h3>�e�@Setting</h3>
+                <div class=form-group style=max-width:300px>
+                    <label for=idInput>���[�U�[ID (1?65535):</label>
+                    <input type=number class=form-control id=idInput min=1 max=65535 placeholder="��: 1234">
+                </div>
+                <input class="btn btn-success" type=button id=sendIdButton value=ID���M>
+                <hr>
+            </div>
+
             <div id=terminal></div>
         </div>
         <script src=typescript.73364a8d.js type=module></script>
