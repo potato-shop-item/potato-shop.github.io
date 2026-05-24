@@ -48,27 +48,6 @@
                 <hr>
             </div>
 
-            <div id=console>
-                <h3>Console </h3>
-                <label style=display:none id=lblConsoleFor>Connected to device: </label>
-                <label for=consoleBaudrates id=lblConsoleBaudrate>Baudrate:</label>
-                <select name=consoleBaudrates id=consoleBaudrates>
-                    <option value=115200>115200</option>
-                    <option value=74880>74880</option>
-                </select>
-                <label for=reconnectDelay id=lblReconnectDelay>Reconnect Delay (ms):</label>
-                <input type=number id=reconnectDelay name=reconnectDelay value=1000 min=100 max=10000 step=100>
-                <label for=maxRetries id=lblMaxRetries>Max Retries:</label>
-                <input type=number id=maxRetries name=maxRetries value=5 min=1 max=20 step=1>
-
-                <br><br>
-
-                <input class="btn btn-info" type=button id=consoleStartButton value=Start>
-                <input class="btn btn-info" type=button id=consoleStopButton value=Stop>
-                <input class="btn btn-info" type=button id=resetButton value=Reset>
-                <hr>
-            </div>
-
             <div id=parentSetting>
                 <h3>親機Setting</h3>
                 <div class=form-group style=max-width:300px;margin-bottom:15px>
@@ -83,9 +62,8 @@
                 <hr>
             </div>
 
-			<div id=terminal style=background-color:#000;border-radius:4px;margin-bottom:20px;padding:10px></div>
-
+            <div id=terminal style=background-color:#000;border-radius:4px;margin-bottom:20px;padding:10px></div>
         </div>
-        <script src=typescript.d8625ca0.js type=module></script>
+        <script src=typescript.f507f0ba.js type=module></script>
         <script>var isSafari=/constructor/i.test(window.HTMLElement)||function(i){return"[object SafariRemoteNotification]"===i.toString()}(!window.safari||"u">typeof safari&&window.safari.pushNotification);isSafari&&(document.getElementById("safariErr").style.display="inline",document.getElementById("main").style.display="none");</script>
     
