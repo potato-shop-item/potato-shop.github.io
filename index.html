@@ -71,16 +71,20 @@
 
             <div id=parentSetting>
                 <h3>親機Setting</h3>
-                <div class=form-group style=max-width:300px>
-                    <label for=idInput>ユーザーID (1?65535):</label>
+                <div class=form-group style=max-width:300px;margin-bottom:15px>
+                    <label for=idInput>ユーザーID (1〜65535):</label>
                     <input type=number class=form-control id=idInput min=1 max=65535 placeholder="例: 1234">
                 </div>
-                <input class="btn btn-success" type=button id=sendIdButton value=ID送信>
+                
+                <input class="btn btn-info" type=button id=parentStartButton value=Start>
+                <input class="btn btn-info" type=button id=parentStopButton value=Stop style=display:none>
+                <input class="btn btn-info" type=button id=parentResetButton value=Reset style=display:none>
+                <input class="btn btn-success" type=button id=sendIdButton value=ID送信 style=display:none>
                 <hr>
             </div>
 
             <div id=terminal></div>
         </div>
-        <script src=typescript.73364a8d.js type=module></script>
+        <script src=typescript.4f6286d3.js type=module></script>
         <script>var isSafari=/constructor/i.test(window.HTMLElement)||function(i){return"[object SafariRemoteNotification]"===i.toString()}(!window.safari||"u">typeof safari&&window.safari.pushNotification);isSafari&&(document.getElementById("safariErr").style.display="inline",document.getElementById("main").style.display="none");</script>
     
