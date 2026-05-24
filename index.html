@@ -1,18 +1,17 @@
 <!DOCTYPE html><script type=importmap>{"imports":{"1aLB1":"./esp32c5.79736917.js","1rOwG":"./stub_flasher_32s2.c2d0b370.js","1w3ZK":"./stub_flasher_32c2.33dd4f2e.js","4I2Sc":"./stub_flasher_32c61.14fefeef.js","7EUwX":"./stub_flasher_32h2.fc3308ee.js","88K3s":"./stub_flasher_32p4rc1.86b25a35.js","998XP":"./stub_flasher_32s3.b09176ac.js","9lUoB":"./esp32c6.a9df0e7f.js","WNe3b":"./esp32c2.305ec288.js","bLxdn":"./stub_flasher_32c5.91ab3d05.js","bwACW":"./stub_flasher_32c3.666c4ef5.js","c7UZ1":"./esp32s2.689be6e1.js","cYTsC":"./esp32p4.7094f822.js","coFM5":"./stub_flasher_32p4.a7746577.js","dDuaB":"./esp32c3.c51b9e53.js","dMGxz":"./stub_flasher_32.77a1da7c.js","ee69x":"./esp32c61.2cbc81b2.js","fHE38":"./esp32.7a3d1e55.js","fWetl":"./esp32s3.fec6a76c.js","gUGmD":"./esp32h2.32030ea2.js","heIjL":"./stub_flasher_32c6.3966216a.js","jcQQ1":"./stub_flasher_8266.3c1b03dc.js"}}</script><meta charset=utf-8><title>ESP Tool</title><link rel=stylesheet href=https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css><link rel=stylesheet href=https://cdn.jsdelivr.net/npm/xterm@4.19.0/css/xterm.css><link href="https://fonts.googleapis.com/css?family=Orbitron" rel=stylesheet><link rel=icon href=favicon.ee2246ac.ico><script src=https://cdn.jsdelivr.net/npm/xterm@4.19.0/lib/xterm.min.js></script><script src=https://cdn.jsdelivr.net/npm/crypto-js@4.1.1/crypto-js.js></script><script src=https://ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js></script><script src=https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js></script><body>
-        <h1 align=center><p><img src=esp-logo.089ce671.png width=42 height=42 style=vertical-align:middle crossorigin> ESP Tool</h1>
-        <h4 align=center>A Serial Flasher utility for Espressif chips</h4>
         <div id=safariErr style=display:none><p align=center style=color:red>This tool is not supported on Safari browser!</p>
         </div>
-        <div align=center>
-            <a class="btn btn-info" href=./docs/index.html>View the API Documentation</a>
-
-            <div class="form-check form-check-inline">
-                <input class=form-check-input type=checkbox id=debugLogging value>
-                <label class=form-check-label for=debugLogging>Show Debug log</label>
-            </div>
-          </div>
+        
         <div class=container id=main>
-            <hr>
+            <div style=text-align:right;margin-top:15px>
+                <div class="form-check form-check-inline">
+                    <input class=form-check-input type=checkbox id=debugLogging value>
+                    <label class=form-check-label for=debugLogging>Show Debug log</label>
+                </div>
+            </div>
+
+            <hr style=margin-top:10px>
+            
             <div id=program>
                 <h3> Program </h3>
                 <label for=baudrates id=lblBaudrate>Baudrate:</label>
