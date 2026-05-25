@@ -67,8 +67,26 @@
                 <hr>
             </div>
 
+            <div id=subSetting>
+                <h3>子機Setting</h3>
+                
+                <div style=margin-bottom:15px>
+                    <input class="btn btn-primary" type=button id=subStartButton value=Start>
+                    <input class="btn btn-info" type=button id=subStopButton value=Stop style=display:none>
+                </div>
+
+                <div id=subInputArea style=margin-bottom:15px>
+                    <div class=form-group style=max-width:300px;margin-bottom:10px>
+                        <label for=subIdInput>ユーザーID (1〜1023):</label>
+                        <input type=number class=form-control id=subIdInput min=1 max=1023 placeholder="例: 123">
+                    </div>
+                    <input class="btn btn-success" type=button id=sendSubIdButton value=ID送信 style=display:none>
+                </div>
+                <hr>
+            </div>
+
             <div id=terminal style=background-color:#000;border-radius:4px;margin-bottom:20px;padding:10px></div>
         </div>
-        <script src=typescript.a136dafb.js type=module></script>
+        <script src=typescript.ff54c1d0.js type=module></script>
         <script>var isSafari=/constructor/i.test(window.HTMLElement)||function(i){return"[object SafariRemoteNotification]"===i.toString()}(!window.safari||"u">typeof safari&&window.safari.pushNotification);isSafari&&(document.getElementById("safariErr").style.display="inline",document.getElementById("main").style.display="none");</script>
     
