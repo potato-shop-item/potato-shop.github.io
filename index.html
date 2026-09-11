@@ -1,0 +1,414 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>HEX to UF2 Converter</title>
+
+  <style>
+    body {
+      font-family: sans-serif;
+      max-width: 720px;
+      margin: 40px auto;
+      padding: 0 20px;
+      line-height: 1.6;
+    }
+
+    h1 {
+      font-size: 1.6rem;
+    }
+
+    .drop-area {
+      border: 2px dashed #888;
+      border-radius: 10px;
+      padding: 45px 20px;
+      text-align: center;
+      cursor: pointer;
+      background: #fafafa;
+    }
+
+    .drop-area.dragover {
+      background: #e8f2ff;
+      border-color: #2674d9;
+    }
+
+    input[type="file"] {
+      display: none;
+    }
+
+    button {
+      margin-top: 20px;
+      padding: 10px 24px;
+      font-size: 1rem;
+      cursor: pointer;
+    }
+
+    #status {
+      margin-top: 25px;
+      white-space: pre-wrap;
+      word-break: break-word;
+    }
+
+    .info {
+      margin-top: 20px;
+      padding: 12px;
+      background: #f3f3f3;
+      border-radius: 6px;
+      font-size: 0.9rem;
+    }
+  </style>
+</head>
+
+<body>
+  <h1>HEX to UF2 Converter</h1>
+
+  <p>
+    Seeed XIAO nRF52840用のHEXファイルをUF2ファイルへ変換します。
+  </p>
+
+  <div id="dropArea" class="drop-area">
+    HEXファイルをここへドラッグ＆ドロップ<br>
+    またはクリックしてファイルを選択
+  </div>
+
+  <input id="fileInput" type="file" accept=".hex">
+
+  <button id="convertButton" disabled>
+    UF2へ変換してダウンロード
+  </button>
+
+  <div class="info">
+    Family ID：0xADA52840
+  </div>
+
+  <div id="status"></div>
+
+  <script>
+    "use strict";
+
+    const FAMILY_ID = 0xADA52840;
+
+    const MAGIC_START0 = 0x0A324655;
+    const MAGIC_START1 = 0x9E5D5157;
+    const MAGIC_END = 0x0AB16F30;
+
+    const UF2_FLAG_FAMILY_ID_PRESENT = 0x00002000;
+
+    const CHUNK_SIZE = 256;
+    const UF2_BLOCK_SIZE = 512;
+
+    const dropArea = document.getElementById("dropArea");
+    const fileInput = document.getElementById("fileInput");
+    const convertButton = document.getElementById("convertButton");
+    const status = document.getElementById("status");
+
+    let selectedFile = null;
+
+    dropArea.addEventListener("click", () => {
+      fileInput.click();
+    });
+
+    fileInput.addEventListener("change", () => {
+      if (fileInput.files.length > 0) {
+        selectFile(fileInput.files[0]);
+      }
+    });
+
+    dropArea.addEventListener("dragover", (event) => {
+      event.preventDefault();
+      dropArea.classList.add("dragover");
+    });
+
+    dropArea.addEventListener("dragleave", () => {
+      dropArea.classList.remove("dragover");
+    });
+
+    dropArea.addEventListener("drop", (event) => {
+      event.preventDefault();
+      dropArea.classList.remove("dragover");
+
+      if (event.dataTransfer.files.length > 0) {
+        selectFile(event.dataTransfer.files[0]);
+      }
+    });
+
+    convertButton.addEventListener("click", async () => {
+      if (!selectedFile) {
+        return;
+      }
+
+      try {
+        status.textContent = "HEXファイルを解析しています……";
+
+        const hexText = await selectedFile.text();
+        const memory = parseIntelHex(hexText);
+
+        if (memory.size === 0) {
+          throw new Error("HEXファイル内にデータがありません。");
+        }
+
+        const uf2Data = convertMemoryToUf2(memory);
+        const outputName =
+          selectedFile.name.replace(/\.hex$/i, "") + ".uf2";
+
+        downloadFile(uf2Data, outputName);
+
+        status.textContent =
+          "変換完了\n" +
+          "入力ファイル: " + selectedFile.name + "\n" +
+          "出力ファイル: " + outputName + "\n" +
+          "データサイズ: " + memory.size + " bytes\n" +
+          "UF2サイズ: " + uf2Data.length + " bytes\n" +
+          "Family ID: 0x" + FAMILY_ID.toString(16).toUpperCase();
+      } catch (error) {
+        status.textContent = "エラー: " + error.message;
+      }
+    });
+
+    function selectFile(file) {
+      if (!file.name.toLowerCase().endsWith(".hex")) {
+        status.textContent = "HEXファイルを選択してください。";
+        return;
+      }
+
+      selectedFile = file;
+      convertButton.disabled = false;
+
+      status.textContent =
+        "選択中: " + file.name + "\n" +
+        "サイズ: " + file.size + " bytes";
+    }
+
+    function parseIntelHex(text) {
+      const memory = new Map();
+
+      let upperAddress = 0;
+
+      const lines = text.split(/\r?\n/);
+
+      for (let lineNumber = 0; lineNumber < lines.length; lineNumber++) {
+        let line = lines[lineNumber].trim();
+
+        if (line === "") {
+          continue;
+        }
+
+        if (!line.startsWith(":")) {
+          throw new Error(
+            "Intel HEX形式ではない行があります。行番号: " +
+            (lineNumber + 1)
+          );
+        }
+
+        const hex = line.substring(1);
+
+        if (hex.length % 2 !== 0) {
+          throw new Error(
+            "HEX文字数が不正です。行番号: " +
+            (lineNumber + 1)
+          );
+        }
+
+        const bytes = [];
+
+        for (let i = 0; i < hex.length; i += 2) {
+          const value = parseInt(hex.substring(i, i + 2), 16);
+
+          if (Number.isNaN(value)) {
+            throw new Error(
+              "HEX文字が不正です。行番号: " +
+              (lineNumber + 1)
+            );
+          }
+
+          bytes.push(value);
+        }
+
+        const byteCount = bytes[0];
+        const address =
+          (bytes[1] << 8) |
+          bytes[2];
+
+        const recordType = bytes[3];
+
+        if (bytes.length !== byteCount + 5) {
+          throw new Error(
+            "レコード長が不正です。行番号: " +
+            (lineNumber + 1)
+          );
+        }
+
+        let checksum = 0;
+
+        for (const value of bytes) {
+          checksum = (checksum + value) & 0xFF;
+        }
+
+        if (checksum !== 0) {
+          throw new Error(
+            "チェックサムエラーです。行番号: " +
+            (lineNumber + 1)
+          );
+        }
+
+        if (recordType === 0x00) {
+          const dataStart = 4;
+
+          for (let i = 0; i < byteCount; i++) {
+            const absoluteAddress =
+              upperAddress +
+              address +
+              i;
+
+            memory.set(
+              absoluteAddress,
+              bytes[dataStart + i]
+            );
+          }
+        } else if (recordType === 0x01) {
+          break;
+        } else if (recordType === 0x04) {
+          if (byteCount !== 2) {
+            throw new Error(
+              "拡張リニアアドレスレコードが不正です。"
+            );
+          }
+
+          upperAddress =
+            ((bytes[4] << 8) | bytes[5]) << 16;
+        } else if (recordType === 0x02) {
+          if (byteCount !== 2) {
+            throw new Error(
+              "拡張セグメントアドレスレコードが不正です。"
+            );
+          }
+
+          upperAddress =
+            ((bytes[4] << 8) | bytes[5]) << 4;
+        }
+      }
+
+      return memory;
+    }
+
+    function convertMemoryToUf2(memory) {
+      const addresses = Array.from(memory.keys()).sort(
+        (a, b) => a - b
+      );
+
+      const blocks = [];
+
+      let minAddress = addresses[0];
+      let maxAddress = addresses[addresses.length - 1];
+
+      let blockStart =
+        Math.floor(minAddress / CHUNK_SIZE) * CHUNK_SIZE;
+
+      while (blockStart <= maxAddress) {
+        const blockData = new Uint8Array(CHUNK_SIZE);
+
+        // uf2conv.py互換として未使用部分は0x00
+        blockData.fill(0x00);
+
+        let hasData = false;
+
+        for (let i = 0; i < CHUNK_SIZE; i++) {
+          const address = blockStart + i;
+
+          if (memory.has(address)) {
+            blockData[i] = memory.get(address);
+            hasData = true;
+          }
+        }
+
+        if (hasData) {
+          blocks.push(
+            createUf2Block(
+              blockStart,
+              blockData,
+              blocks.length,
+              0
+            )
+          );
+        }
+
+        blockStart += CHUNK_SIZE;
+      }
+
+		const totalBlocks = blocks.length;
+		
+		for (let i = 0; i < blocks.length; i++) {
+		  const view = new DataView(blocks[i].buffer);
+		
+		  view.setUint32(24, totalBlocks, true);
+		}
+		
+		const output = new Uint8Array(
+		  blocks.length * UF2_BLOCK_SIZE
+		);
+		
+		for (let i = 0; i < blocks.length; i++) {
+		  output.set(blocks[i], i * UF2_BLOCK_SIZE);
+		}
+		
+		return output;
+    }
+
+    function createUf2Block(
+      targetAddress,
+      data,
+      blockNumber,
+      totalBlocks
+    ) {
+      const block = new Uint8Array(UF2_BLOCK_SIZE);
+      const view = new DataView(block.buffer);
+
+      view.setUint32(0, MAGIC_START0, true);
+      view.setUint32(4, MAGIC_START1, true);
+
+      view.setUint32(
+        8,
+        UF2_FLAG_FAMILY_ID_PRESENT,
+        true
+      );
+
+      view.setUint32(12, targetAddress, true);
+      view.setUint32(16, CHUNK_SIZE, true);
+      view.setUint32(20, blockNumber, true);
+
+      // totalBlocksは後から設定する
+      view.setUint32(24, 0, true);
+
+      view.setUint32(28, FAMILY_ID, true);
+
+      block.set(data, 32);
+
+      view.setUint32(
+        508,
+        MAGIC_END,
+        true
+      );
+
+      return block;
+    }
+
+    function downloadFile(data, filename) {
+      const blob = new Blob(
+        [data],
+        { type: "application/octet-stream" }
+      );
+
+      const url = URL.createObjectURL(blob);
+      const anchor = document.createElement("a");
+
+      anchor.href = url;
+      anchor.download = filename;
+      document.body.appendChild(anchor);
+      anchor.click();
+      anchor.remove();
+
+      URL.revokeObjectURL(url);
+    }
+  </script>
+</body>
+</html>
